@@ -1,4 +1,6 @@
 *.EXE
 *.OBJ
+*.MAP
+*.COM
 !TD.EXE
 
