@@ -3,25 +3,44 @@
 .data ;Сегмент данных
     StudentInfo db 'Yanushchik Ilya Andreevich 251 ',0Dh,0Ah,'$'
     nl db 0Dh, 0Ah, '$'
-    simple dw 10 dup(?)
-    result dw 2 dup(' '), '$'
+    simple dw 20 dup(?)
+    result db 4 dup(' '), '$'
+    mn dw 5
 
 .code ;Сегмент кода
 org 100h 
 start: 
     mov dx,offset StudentInfo
     call Out_string       ;печатаем на экран информацию о студенте
+
     mov cx,10
-    mov bx,1
+    mov bx,2
     mov si,0
-m1: mov simple[si],bx
+m1a: mov simple[si],bx
     add si,2
-    add bx,10
-    loop m1
+    add bx,2
+    loop m1a
 
     mov cx,10
     mov si,0
-m3: mov ax,simple[si]
+m1b:mov bx,simple[si]
+    mov ax,bx
+    mul mn
+    mov simple[si+20],ax
+    add si,2
+    loop m1b
+
+    mov cx,20
+    mov di,10
+    mov si,0
+m3: mov ax,cx
+    mov dx, 0
+    div di
+    cmp dx,0
+    jne m4
+    mov dx, offset nl
+    call Out_string
+m4: mov ax,simple[si]
     mov bx,10
     call byte_asc
     call Out_result
@@ -33,12 +52,12 @@ m3: mov ax,simple[si]
 
 byte_asc proc ;Процедура преобразования числа в строку
     pusha
-    mov si,2
+    mov si,4
 m2: sub si,1
     mov dx,0
     div bx
     add dx,30h
-    mov result[si+2],dx
+    mov result[si],dl
     cmp ax,0
     jne m2
     popa
@@ -55,8 +74,6 @@ Out_result proc
     pusha
     mov ah,09h
     mov dx,offset result
-    int 21h
-    mov dx,offset nl
     int 21h
     popa
     ret
